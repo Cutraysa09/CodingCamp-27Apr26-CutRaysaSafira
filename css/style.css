@@ -1,0 +1,689 @@
+/* Expense & Budget Visualizer — styles */
+
+/* ── Theme: CSS Custom Properties ─────────────────────────────────────────── */
+
+/*
+ * Light theme (default)
+ * All text/background pairs meet WCAG 2.1 AA ≥ 4.5:1 contrast ratio.
+ *
+ * Contrast checks (approximate):
+ *   --color-text (#1a1a2e) on --color-bg (#f5f5f5):        ~14.5:1  ✓
+ *   --color-text (#1a1a2e) on --color-surface (#ffffff):   ~16.1:1  ✓
+ *   --color-text-muted (#4a4a6a) on --color-bg (#f5f5f5):  ~6.5:1   ✓
+ *   --color-accent (#2563eb) on --color-surface (#ffffff):  ~5.9:1   ✓
+ *   --color-warning-text (#7c2d12) on --color-warning-bg (#fef3c7): ~5.2:1 ✓
+ */
+:root {
+  /* Background — page canvas */
+  --color-bg: #f5f5f5;
+
+  /* Surface — cards, form panels, list containers */
+  --color-surface: #ffffff;
+
+  /* Text — primary body and heading text */
+  --color-text: #1a1a2e;
+
+  /* Text muted — secondary labels, placeholders */
+  --color-text-muted: #4a4a6a;
+
+  /* Border — input outlines, dividers */
+  --color-border: #d1d5db;
+
+  /* Accent — primary action buttons, links, focus rings */
+  --color-accent: #2563eb;
+
+  /* Accent text — text placed on top of --color-accent backgrounds */
+  --color-accent-text: #ffffff;
+
+  /* Warning background — spending-limit banner fill */
+  --color-warning-bg: #fef3c7;
+
+  /* Warning text — text inside the warning banner */
+  --color-warning-text: #7c2d12;
+
+  /* Warning border — border around the warning banner */
+  --color-warning-border: #f59e0b;
+
+  /* Error — inline validation error messages */
+  --color-error: #b91c1c;
+}
+
+/*
+ * Dark theme — applied when <html data-theme="dark">
+ * All text/background pairs meet WCAG 2.1 AA ≥ 4.5:1 contrast ratio.
+ *
+ * Contrast checks (approximate):
+ *   --color-text (#e2e8f0) on --color-bg (#0f172a):        ~14.7:1  ✓
+ *   --color-text (#e2e8f0) on --color-surface (#1e293b):   ~10.6:1  ✓
+ *   --color-text-muted (#94a3b8) on --color-bg (#0f172a):  ~6.1:1   ✓
+ *   --color-accent (#60a5fa) on --color-surface (#1e293b):  ~5.5:1   ✓
+ *   --color-warning-text (#fef3c7) on --color-warning-bg (#78350f): ~8.1:1 ✓
+ */
+[data-theme="dark"] {
+  /* Background — page canvas */
+  --color-bg: #0f172a;
+
+  /* Surface — cards, form panels, list containers */
+  --color-surface: #1e293b;
+
+  /* Text — primary body and heading text */
+  --color-text: #e2e8f0;
+
+  /* Text muted — secondary labels, placeholders */
+  --color-text-muted: #94a3b8;
+
+  /* Border — input outlines, dividers */
+  --color-border: #334155;
+
+  /* Accent — primary action buttons, links, focus rings */
+  --color-accent: #60a5fa;
+
+  /* Accent text — text placed on top of --color-accent backgrounds */
+  --color-accent-text: #0f172a;
+
+  /* Warning background — spending-limit banner fill */
+  --color-warning-bg: #78350f;
+
+  /* Warning text — text inside the warning banner */
+  --color-warning-text: #fef3c7;
+
+  /* Warning border — border around the warning banner */
+  --color-warning-border: #f59e0b;
+
+  /* Error — inline validation error messages */
+  --color-error: #fca5a5;
+}
+
+/* ── Base / Reset ─────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Typography & Root ────────────────────────────────────────────────────── */
+
+html {
+  font-size: 16px; /* base ≥ 16px — NFR-3.2 */
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6; /* comfortable reading — NFR-3.2 */
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+
+.app-header {
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* ── Spending Limit Warning Banner ────────────────────────────────────────── */
+
+#limit-warning {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  border-bottom: 2px solid var(--color-warning-border);
+  padding: 0.625rem 1.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* ── Main Layout ──────────────────────────────────────────────────────────── */
+
+/*
+ * Desktop: two-column grid
+ *   Left column  — form section + chart section (stacked vertically)
+ *   Right column — transaction list section
+ *
+ * The left column uses an inner flex column so the form and chart
+ * stack naturally without a third grid track.
+ */
+
+.app-main {
+  flex: 1; /* fill remaining vertical space */
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
+  grid-template-areas:
+    "form  list"
+    "chart list";
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.form-section {
+  grid-area: form;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+}
+
+.chart-section {
+  grid-area: chart;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+}
+
+.list-section {
+  grid-area: list;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  /* Stretch to fill both grid rows on the right */
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Scrollable Transaction List Container ────────────────────────────────── */
+
+.list-container {
+  flex: 1; /* grow inside .list-section */
+  max-height: 480px;
+  overflow-y: auto;
+  /* Subtle inset shadow to hint scrollability */
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+}
+
+/* ── Section Headings ─────────────────────────────────────────────────────── */
+
+.form-section h2,
+.chart-section h2,
+.list-section h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--color-text);
+}
+
+/* ── Chart Container ──────────────────────────────────────────────────────── */
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  /* Fixed height so Chart.js can calculate dimensions */
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+
+.app-footer {
+  background-color: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* ── Responsive: single-column below 640 px ──────────────────────────────── */
+
+@media (max-width: 640px) {
+  /* ── Layout: single column ── */
+  .app-main {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "form"
+      "chart"
+      "list";
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .list-container {
+    /* Slightly shorter on small screens to leave room for other content */
+    max-height: 320px;
+  }
+
+  .app-header,
+  .app-footer {
+    padding: 0.75rem 1rem;
+  }
+
+  /* ── Footer controls: stack vertically on mobile ── */
+  .app-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .sort-control,
+  .limit-control {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.375rem;
+    width: 100%;
+  }
+
+  #sort-select,
+  #spending-limit {
+    width: 100%;
+  }
+
+  /* ── Touch targets: all interactive elements ≥ 44px (NFR-2.3) ── */
+
+  /* Form inputs and selects */
+  .field-group input[type="text"],
+  .field-group input[type="number"],
+  .field-group select {
+    min-height: 2.75rem; /* 44px */
+    padding: 0.625rem 0.75rem;
+  }
+
+  /* Submit button */
+  #submit-btn {
+    min-height: 2.75rem; /* 44px */
+    padding: 0.75rem 1rem;
+  }
+
+  /* Sort select and spending limit input in footer */
+  #sort-select,
+  #spending-limit {
+    min-height: 2.75rem; /* 44px */
+    padding: 0.625rem 0.75rem;
+    font-size: 1rem;
+  }
+
+  /* Delete button on transaction items */
+  .delete-btn {
+    min-width: 2.75rem;  /* 44px */
+    min-height: 2.75rem; /* 44px */
+    font-size: 1rem;
+  }
+
+  /* Theme toggle (already 44px, reinforce for mobile) */
+  #theme-toggle {
+    min-width: 2.75rem;  /* 44px */
+    min-height: 2.75rem; /* 44px */
+  }
+
+  /* ── Transaction item: adapt grid for narrow screens ── */
+  .transaction-item {
+    /* Stack name on its own row; category, amount, delete share second row */
+    grid-template-columns: 1fr auto auto;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "name   name   delete"
+      "cat    amount delete";
+    gap: 0.25rem 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .tx-name     { grid-area: name; }
+  .tx-category { grid-area: cat; }
+  .tx-amount   { grid-area: amount; }
+  .delete-btn  { grid-area: delete; align-self: center; }
+}
+
+/* ── Balance Display ──────────────────────────────────────────────────────── */
+
+#balance-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.balance-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+#balance-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+/* ── Theme Toggle Button ──────────────────────────────────────────────────── */
+
+#theme-toggle {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  font-size: 1.125rem;
+  cursor: pointer;
+  color: var(--color-text);
+  line-height: 1;
+  /* Ensure adequate touch target size (≥ 44px) */
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+#theme-toggle:hover {
+  background-color: var(--color-bg);
+  border-color: var(--color-accent);
+}
+
+#theme-toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ── Form Fields ──────────────────────────────────────────────────────────── */
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.field-group:last-of-type {
+  margin-bottom: 0;
+}
+
+.field-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.field-group input[type="text"],
+.field-group input[type="number"],
+.field-group select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  line-height: 1.5;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  /* Remove default number input spinners in Firefox */
+  -moz-appearance: textfield;
+}
+
+/* Remove spinners in Chrome/Safari/Edge */
+.field-group input[type="number"]::-webkit-inner-spin-button,
+.field-group input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.field-group input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.field-group input:focus,
+.field-group select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+
+#submit-btn {
+  display: block;
+  width: 100%;
+  margin-top: 1.25rem;
+  padding: 0.625rem 1rem;
+  font-size: 1rem;
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--color-accent-text);
+  background-color: var(--color-accent);
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: opacity 0.15s ease, box-shadow 0.15s ease;
+}
+
+#submit-btn:hover {
+  opacity: 0.9;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--color-accent) 40%, transparent);
+}
+
+#submit-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+#submit-btn:active {
+  opacity: 0.85;
+}
+
+/* ── Inline Error Messages ────────────────────────────────────────────────── */
+
+/*
+ * Error spans are hidden by default via the `hidden` HTML attribute.
+ * JavaScript adds the `.error-visible` class (and removes `hidden`) to show them.
+ */
+
+.error-msg {
+  display: none;
+  font-size: 0.8125rem;
+  color: var(--color-error);
+  font-weight: 500;
+}
+
+.error-msg.error-visible {
+  display: block;
+}
+
+/* ── Transaction List Items ───────────────────────────────────────────────── */
+
+#transaction-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.transaction-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.transaction-item:last-child {
+  border-bottom: none;
+}
+
+.tx-name {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text);
+  /* Prevent very long names from breaking layout */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+/* Category badge */
+.tx-category {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+  background-color: color-mix(in srgb, var(--color-accent) 15%, transparent);
+  color: var(--color-accent);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
+
+.tx-amount {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.delete-btn {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.375rem;
+  font-size: 0.875rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  /* Adequate touch target */
+  min-width: 2rem;
+  min-height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn:hover {
+  color: var(--color-error);
+  border-color: var(--color-error);
+  background-color: color-mix(in srgb, var(--color-error) 10%, transparent);
+}
+
+.delete-btn:focus-visible {
+  outline: 2px solid var(--color-error);
+  outline-offset: 2px;
+}
+
+/* ── Empty State ──────────────────────────────────────────────────────────── */
+
+.empty-state {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  font-style: italic;
+  list-style: none;
+}
+
+/* ── Chart Empty State ────────────────────────────────────────────────────── */
+
+#chart-empty {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  font-style: italic;
+  text-align: center;
+}
+
+/* ── Sort Control ─────────────────────────────────────────────────────────── */
+
+.sort-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sort-control label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+#sort-select {
+  padding: 0.375rem 0.625rem;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+#sort-select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+
+/* ── Spending Limit Control ───────────────────────────────────────────────── */
+
+.limit-control {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.limit-control label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+#spending-limit {
+  padding: 0.375rem 0.625rem;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  width: 9rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  /* Remove default number spinners */
+  -moz-appearance: textfield;
+}
+
+#spending-limit::-webkit-inner-spin-button,
+#spending-limit::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#spending-limit:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+
+#limit-error {
+  display: none;
+  font-size: 0.8125rem;
+  color: var(--color-error);
+  font-weight: 500;
+  width: 100%;
+}
+
+#limit-error.error-visible {
+  display: block;
+}
